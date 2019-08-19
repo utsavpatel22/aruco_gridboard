@@ -16,8 +16,7 @@ from mavros_msgs.srv import SetMode
 from mavros_msgs.srv import CommandTOL
 import math
 
-pi = math.pi
-pi_2 = pi / 2.0
+pi_2 = math.pi / 2.0
 
 class MavController:
     """
@@ -146,32 +145,42 @@ def simple_demo():
     c = MavController()
     rospy.sleep(1)
 
-    print("Takeoff")
-    c.takeoff(1.0)
-    rospy.sleep(7)
+    alt = 0.8
 
-    r = 0.4
-    c.goto_xyz_rpy(0.2, 0.3, 1.0, 0, 0, 0)
+    print("Takeoff " + str(alt))
+    c.takeoff(alt)
     rospy.sleep(3)
-    c.goto_xyz_rpy(0.2 + r, 0.3, 1.0, 0, 0, 0)
+    c.goto_xyz_rpy(0,0,alt,0,0,0)
     rospy.sleep(3)
 
-    # for i in range(10):
-    #     y = i * 0.2 / 10.0
-    #     c.goto_xyz_rpy(0.2 + r, y, 1.2, 0, 0, 0)
-    #     rospy.sleep(0.2)
+    r = 0.3
+    c.goto_xyz_rpy(0.2, 0.3, alt, 0, 0, 0)
+    rospy.sleep(3)
 
-    for i in range(360):
-        theta = i * 2.0 * pi / 180.0
-        x = 0.2 + r * math.cos(theta);
-        y = 0.3 + r * math.sin(theta);
-        z = 1.0;
-        c.goto_xyz_rpy(x, y, z, 0.0, 0.0, theta)
-        rospy.sleep(0.1)
+    rate = rospy.Rate(14)
+    for i in range(180):
+        theta = i * 2.0 * math.pi / 180.0
+        c = math.sin(theta) * math.sin(theta) + 1.0
+        x = r * math.sin(theta) * math.cos(theta) / c
+        y = r * math.cos(theta) / c
+        x1 = 0.2 + x
+        y1 = 0.3 + y
+        z = alt;
+
+        alpha = math.atan(y/x)
+        if (x < 0):
+            alpha = math.pi + alpha
+        elif (x > 0 and y < 0):
+            alpha = 2 * math.pi + alpha
+
+        phi = 3 * alpha + pi_2
+
+        c.goto_xyz_rpy(x1, y1, z, 0.0, 0.0, phi)
+        rate.sleep()
 
     rospy.sleep(3)
 
-    c.goto_xyz_rpy(0.0, 0.0, 1.0, 0, 0, 0)
+    c.goto_xyz_rpy(0.0, 0.0, alt, 0, 0, 0)
     rospy.sleep(3)
 
     #print("Velocity Setpoint 1")

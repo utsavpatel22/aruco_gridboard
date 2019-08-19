@@ -118,13 +118,13 @@ class MavController:
         # Set to stabilize mode for arming
         #mode_resp = self.mode_service(custom_mode="0")
         mode_resp = self.mode_service(custom_mode="4")
-        self.arm()
+        #self.arm()
 
         # Set to guided mode
         #mode_resp = self.mode_service(custom_mode="4")
 
         # Takeoff
-        takeoff_resp = self.takeoff_service(altitude=height)
+        #takeoff_resp = self.takeoff_service(altitude=height)
 
         #return takeoff_resp
         return mode_resp
@@ -143,33 +143,38 @@ def simple_demo():
     """
     c = MavController()
     rospy.sleep(1)
+    alt = 0.8
 
-    print("Takeoff")
-    c.takeoff(0.5)
+    print("Takeoff " + str(alt))
+    c.takeoff(alt)
     rospy.sleep(3)
-    c.goto_xyz_rpy(0,0,1.2,0,0,0)
-    rospy.sleep(3)
+    c.goto_xyz_rpy(0,0,0.8,0,0,0)
+    #rospy.sleep(3)
 
     print("Waypoint 1: position control")
-    c.goto_xyz_rpy(0.0,0.0,1.2,0,0,-1*pi_2)
+    c.goto_xyz_rpy(0.0,0.0,alt,0,0,-1*pi_2)
     rospy.sleep(2)
-    c.goto_xyz_rpy(0.4,0.0,1.2,0,0,-1*pi_2)
+    c.goto_xyz_rpy(0.4,0.0,alt,0,0,-1*pi_2)
     rospy.sleep(3)
     print("Waypoint 2: position control")
-    c.goto_xyz_rpy(0.4,0.0,1.2,0,0,0)
+    c.goto_xyz_rpy(0.4,0.0,alt,0,0,0)
     rospy.sleep(2)
-    c.goto_xyz_rpy(0.4,0.4,1.2,0,0,0)
+    c.goto_xyz_rpy(0.4,0.4,alt,0,0,0)
     rospy.sleep(3)
     print("Waypoint 3: position control")
-    c.goto_xyz_rpy(0.4,0.4,1.2,0,0,pi_2)
+    c.goto_xyz_rpy(0.4,0.4,alt,0,0,pi_2)
     rospy.sleep(2)
-    c.goto_xyz_rpy(0.0,0.4,1.2,0,0,pi_2)
+    c.goto_xyz_rpy(0.0,0.4,alt,0,0,pi_2)
     rospy.sleep(3)
     print("Waypoint 4: position control")
-    c.goto_xyz_rpy(0.0,0.4,1.2,0,0,2*pi_2)
+    c.goto_xyz_rpy(0.0,0.4,alt,0,0,2*pi_2)
     rospy.sleep(2)
-    c.goto_xyz_rpy(0.0,0.0,1.2,0,0,2*pi_2)
+    c.goto_xyz_rpy(0.0,0.0,alt,0,0,2*pi_2)
     rospy.sleep(3)
+    #c.goto_xyz_rpy(0.0,0.0,alt,0,0,3*pi_2)
+    #rospy.sleep(1)
+    #c.goto_xyz_rpy(0.0,0.0,alt,0,0,4*pi_2)
+    #rospy.sleep(2)
 
     #print("Velocity Setpoint 1")
     #c.set_vel(0,0.1,0)
