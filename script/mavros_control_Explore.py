@@ -14,6 +14,7 @@ from mavros_msgs.msg import RCIn
 from mavros_msgs.srv import CommandBool
 from mavros_msgs.srv import SetMode
 from mavros_msgs.srv import CommandTOL
+from std_msgs.msg import Bool
 
 pi_2 = 3.141592654 / 2.0
 
@@ -137,54 +138,34 @@ class MavController:
         resp = self.mode_service(custom_mode="9")
         self.disarm()
 
+def detection_callback(data):
+    global detection_status
+    detection_status = data.data
+    print("in detection callback")
+
 def simple_demo():
     """
     A simple demonstration of using mavros commands to control a UAV.
     """
     c = MavController()
+    global detection_status
+    detection_status = False
+    rospy.Subscriber('/detection_state_bool', Bool, detection_callback)
     rospy.sleep(1)
     alt = 0.6
 
-    print("Takeoff " + str(alt))
-    #c.takeoff(alt)
-    #rospy.sleep(3)
-    #c.goto_xyz_rpy(0,0,alt,0,0,0)
-    rospy.sleep(3)
+    waypoints_x = [1,1,0,0,1,1,0]
+    waypoints_y = [0,1,1,2,2,3,3]
 
-    print("Waypoint 1: position control")
-    #c.goto_xyz_rpy(0.0,0.0,alt,0,0,-1*pi_2)
-    #rospy.sleep(2)
-    c.goto_xyz_rpy(0.0,0.4,alt,0,0,0)
-    rospy.sleep(3)
-    print("Waypoint 2: position control")
-    c.goto_xyz_rpy(0.4,0.4,alt,0,0,0)
-    rospy.sleep(3)
-    c.goto_xyz_rpy(0.4,0.0,alt,0,0,0)
-    rospy.sleep(3)
-    print("Waypoint 3: position control")
-    c.goto_xyz_rpy(0.8,0.0,alt,0,0,0)
-    rospy.sleep(3)
-    c.goto_xyz_rpy(0.8,0.4,alt,0,0,0)
-    rospy.sleep(3)
-    print("Waypoint 4: position control")
-    c.goto_xyz_rpy(0.8,0.0,alt,0,0,0)
-    rospy.sleep(3)
-    c.goto_xyz_rpy(1.2,0.0,alt,0,0,0)
-    rospy.sleep(3)
-    c.goto_xyz_rpy(1.2,0.4,alt,0,0,0)
-    rospy.sleep(3)
-    #c.goto_xyz_rpy(0.0,0.0,alt,0,0,4*pi_2)
-    #rospy.sleep(2)
-
-    #print("Velocity Setpoint 1")
-    #c.set_vel(0,0.1,0)
-    #rospy.sleep(5)
-    #print("Velocity Setpoint 2")
-    #c.set_vel(0,-0.1,0)
-    #rospy.sleep(5)
-    #print("Velocity Setpoint 3")
-    #c.set_vel(0,0,0)
-    #rospy.sleep(5)
+    for i in range(len(waypoints_x)):
+        c.goto_xyz_rpy(waypoints_x[i],waypoints_y[i],alt,0,0,0)
+        rospy.sleep(3)
+        print("Waypoint {}: position control".format(i))
+        if detection_status:
+           print("Found landing site and landing")
+           c.land
+           break
+    
 
     print("Landing")
     c.land()
