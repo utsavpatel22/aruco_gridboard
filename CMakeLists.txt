@@ -42,11 +42,7 @@ catkin_package(
 )
 
 add_executable(aruco_gridboard
-  src/main.cpp
-  src/names.cpp
-  src/names.h
-  src/node.cpp
-  src/node.h
+
 )
 
 target_link_libraries(aruco_gridboard
