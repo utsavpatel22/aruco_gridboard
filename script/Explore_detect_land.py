@@ -143,6 +143,9 @@ def detection_callback(data):
     global detection_status
     detection_status = data.data
 
+    if (detection_status == 1):
+        detection_location = rospy.wait_for_message("/camera/odom/sample", Odometry, timeout=5.0)
+
 
 
 def simple_demo():
@@ -168,14 +171,14 @@ def simple_demo():
         if(detection_status == 0):
            print("Going to waypoint {} = {}, {}".format(i, waypoints_x[i],waypoints_y[i]))
            c.goto_xyz_rpy(waypoints_x[i],waypoints_y[i],alt,0,0,0)
-           rospy.sleep(5)
+           rospy.sleep(10)
            print("Reached waypoint ")
 
         else:
-           detection_location = rospy.wait_for_message("/detection_location", Odometry, timeout=5.0)
+           # detection_location = rospy.wait_for_message("/detection_location", Odometry, timeout=5.0)
            print("Navigating to the landing site at {}, {}".format(detection_location.pose.pose.position.x,detection_location.pose.pose.position.y))
            c.goto_xyz_rpy(detection_location.pose.pose.position.x,detection_location.pose.pose.position.y,alt,0,0,0)
-           rospy.sleep(5)
+           rospy.sleep(10)
            print("Hovering on the landing site")
            break
     
