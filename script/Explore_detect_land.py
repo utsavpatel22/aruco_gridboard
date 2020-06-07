@@ -166,7 +166,7 @@ def simple_demo():
 
     for i in range(len(waypoints_x)):
         if(detection_status == 0):
-           print("Going to waypoint {} - {}, {}".format(i, waypoints_x[i],waypoints_y[i]))
+           print("Going to waypoint {} = {}, {}".format(i, waypoints_x[i],waypoints_y[i]))
            c.goto_xyz_rpy(waypoints_x[i],waypoints_y[i],alt,0,0,0)
            rospy.sleep(5)
            print("Reached waypoint ")
