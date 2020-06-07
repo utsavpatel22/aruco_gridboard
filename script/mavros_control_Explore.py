@@ -14,7 +14,8 @@ from mavros_msgs.msg import RCIn
 from mavros_msgs.srv import CommandBool
 from mavros_msgs.srv import SetMode
 from mavros_msgs.srv import CommandTOL
-from std_msgs.msg import Bool
+from std_msgs.msg import Int16
+from nav_msgs.msg import Odometry
 
 pi_2 = 3.141592654 / 2.0
 
@@ -150,23 +151,29 @@ def simple_demo():
     c = MavController()
     global detection_status
     detection_status = False
-    rospy.Subscriber('/detection_state_bool', Bool, detection_callback)
+    rospy.Subscriber('/detection_state_bool', Int16, detection_callback)
+    global detection_location
+    detection_location = Odometry() 
     rospy.sleep(1)
     alt = 0.6
 
-    waypoints_x = [1,1,0,0,1,1,0]
-    waypoints_y = [0,1,1,2,2,3,3]
+   # waypoints_x = [2,2,0,0,2,2,0]
+   # waypoints_y = [0,1,1,2,2,3,3]
+
+    waypoints_x = [-1,1,-1,1,0]
+    waypoints_y = [1,1,-1,-1,0]
 
     for i in range(len(waypoints_x)):
         c.goto_xyz_rpy(waypoints_x[i],waypoints_y[i],alt,0,0,0)
-        rospy.sleep(3)
+        rospy.sleep(5)
         print("Waypoint {}: position control".format(i))
-        if detection_status:
-           print("Found landing site and landing")
-           c.land
+        if detection_status == 1:
+           detection_location = rospy.wait_for_message("/detection_location", Odometry, timeout=5.0)
+           print("Navigating to the landing site")
+           c.goto_xyz_rpy(detection_location.pose.pose.position.x,detection_location.pose.pose.position.y,alt,0,0,0)
            break
     
-
+    
     print("Landing")
     c.land()
 
