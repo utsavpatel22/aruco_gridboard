@@ -167,14 +167,14 @@ def simple_demo():
 
     for i in range(len(waypoints_x)):
         if(detection_status == 0):
-           print("Going to waypoint {}".format(i))
+           print("Going to waypoint {} - {}, {}".format(i))
            c.goto_xyz_rpy(waypoints_x[i],waypoints_y[i],alt,0,0,0)
            rospy.sleep(5)
            print("Reached waypoint ")
 
         else:
            detection_location = rospy.wait_for_message("/detection_location", Odometry, timeout=5.0)
-           print("Navigating to the landing site")
+           print("Navigating to the landing site at {}, {}".format(detection_location.pose.pose.position.x,detection_location.pose.pose.position.y))
            c.goto_xyz_rpy(detection_location.pose.pose.position.x,detection_location.pose.pose.position.y,alt,0,0,0)
            rospy.sleep(5)
            print("Hovering on the landing site")
