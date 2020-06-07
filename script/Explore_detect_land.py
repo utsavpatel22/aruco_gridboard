@@ -144,7 +144,6 @@ def detection_callback(data):
     detection_status = data.data
 
 
-    print("in detection callback")
 
 def simple_demo():
     """
